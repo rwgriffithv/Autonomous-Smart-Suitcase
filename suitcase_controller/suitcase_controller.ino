@@ -52,6 +52,8 @@ const float K_d_v_xy_mag = 0.1;
 const float K_p_w_z = 4;
 const float K_d_w_z = 2;
 
+const float alpha = 150.0;
+const float PWM_MAX = 255;
 
 void computeBias() {
   accel_bias = (struct vector){.x = 0, .y = 0, .z = 0};
@@ -191,6 +193,16 @@ void loop() {
     if (pwm_r < 0) {
       wheel_dir_r = 1;
       pwm_r = -1.0 * pwm_r;
+    }
+
+    pwm_l *= alpha;
+    pwm_r *= alpha;
+
+    if (pwm_l > PWM_MAX) {
+       pwm_l = 200;
+    }
+    if (pwm_r > PWM_MAX) {
+       pwm_r = 200;
     }
 
     /* OUTPUT ERROR AND PWM OUTPUTS
