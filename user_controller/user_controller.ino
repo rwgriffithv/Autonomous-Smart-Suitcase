@@ -18,7 +18,7 @@ const uint8_t TOUCH_BTN_PIN = 7;
 uint8_t btn_state;
 uint8_t btn_state_last;
 unsigned long last_debounce_millis;
-const unsigned long DEBOUNCE_DELAY = 100;
+const unsigned long DEBOUNCE_DELAY = 1000;
 
 /* Bluetooth config */
 const uint8_t RxD = 2;
@@ -97,6 +97,7 @@ void computeBias() {
 
 void reset() {
   btn_state = 0;
+  btn_state_last = 0;
 
   goal_data.f[0] = 0.0;
   goal_data.f[1] = 0.0;
@@ -129,46 +130,33 @@ void setup() {
 
   reset();
   millis_prev = millis();
+  last_debounce_millis = millis_prev;
 }
 
 
 void loop() {
+  millis_curr = millis();
   uint8_t btn_state_new = digitalRead(TOUCH_BTN_PIN);
-  if (btn_state_new != btn_state_last) {
-    last_debounce_millis = millis();
-  }
-  if ((millis() - last_debounce_millis) > DEBOUNCE_DELAY) {
+  
+  if ((millis_curr - last_debounce_millis) > DEBOUNCE_DELAY) {
     if (btn_state_new != btn_state) {
       Serial.print(F("BUTTON PRESS   ;  "));
       btn_state = btn_state_new;
+      last_debounce_millis = millis_curr;
       if (btn_state_new == HIGH) { /* was pressed (rising edge) */
 	if (following) { /* send STOP */
 	  char msg[5] = "STOP";
 	  for (uint8_t i = 0; i < 4; ++i) {
-	    uint8_t spin = 0;
-	    while (spin < 49) {
-	      if (BTserial.available()) {
-		BTserial.write(msg[i]);
-		spin = 50;
-	      } else {
-		++spin;
-	      }
-	    }
+	    Serial.print(F("sending char "));
+	    Serial.print(msg[i]);
+	    BTserial.write(msg[i]);
 	  }
 	} else { /* send START */
 	  Serial.print(F("sending START"));
 	  Serial.println(F(""));
 	  char msg[6] = "START";
 	  for (uint8_t i = 0; i < 5; ++i) {
-	    uint8_t spin = 0;
-	    while (spin < 49) {
-	      if (BTserial.available()) {
-		BTserial.write(msg[i]);
-		spin = 50;
-	      } else {
-		++spin;
-	      }
-	    }
+	    BTserial.write(msg[i]);
 	  }
 	}
 
@@ -176,12 +164,9 @@ void loop() {
       }
     }
   }
-  btn_state_last = btn_state_new;
   
 
   if (following) {
-    millis_curr = millis();
-  
     accel.getEvent(&accel_event);
     /* summing (integrating) instantaneous acceleration to get velocity */
     velocity_trans_curr.x += accel_event.acceleration.x;
@@ -219,15 +204,7 @@ void loop() {
 	} else {
 	  c_buf = 'b';
 	}
-	uint8_t spin = 0;
-	while (spin < 49) {
-	  if (BTserial.available()) {
-	    BTserial.write(c_buf);
-	    spin = 50;
-	  } else {
-	    ++spin;
-	  }
-	}
+	BTserial.write(c_buf);
       }
 
       /* reset so error doesn't accumulate */
