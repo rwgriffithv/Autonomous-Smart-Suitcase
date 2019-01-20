@@ -15,12 +15,12 @@
 
 
 /* Motor config */
-const uint8_t MOTOR_L_PWM_PIN = 10;
-const uint8_t MOTOR_R_PWM_PIN = 11;
-const uint8_t MOTOR_L_F_PIN = 8;
-const uint8_t MOTOR_L_B_PIN = 9;
-const uint8_t MOTOR_R_F_PIN = 12;
-const uint8_t MOTOR_R_B_PIN = 13;
+const uint8_t MOTOR_L_PWM_PIN = 11;
+const uint8_t MOTOR_R_PWM_PIN = 10;
+const uint8_t MOTOR_L_F_PIN = 12;
+const uint8_t MOTOR_L_B_PIN = 13;
+const uint8_t MOTOR_R_F_PIN = 8;
+const uint8_t MOTOR_R_B_PIN = 9;
 
 /* Bluetooth config */
 const uint8_t RxD = 6;
@@ -43,7 +43,7 @@ sensors_event_t gyro_event;
 
 unsigned long millis_prev;
 unsigned long millis_curr;
-const unsigned long PERIOD = 100;
+const unsigned long PERIOD = 10;
 
 unsigned long steps;
 
@@ -71,13 +71,14 @@ float pwm_r;
 
 const float K_p_v_y = 0.2;
 const float K_d_v_y = 0.05;
-const float K_p_v_xy_mag = 1;
-const float K_d_v_xy_mag = 0.5;
-const float K_p_w_z = 4;
-const float K_d_w_z = 2;
+const float K_p_v_xy_mag = 0.5;
+const float K_d_v_xy_mag = 0.15;
+const float K_p_w_z = 3.0;
+const float K_d_w_z = 1.7;
 
-const float ALPHA = 40.0;
+const float ALPHA = 20.0;
 const float PWM_MAX = 255;
+const float PWM_MIN = 35;
 const float STRAIGHT_RATIO = 200.0/203.0;
 
 bool following;
@@ -264,7 +265,7 @@ void loop() {
 	float v_xy_mag_error_d = (v_xy_mag_goal - v_xy_mag_goal_prev) - (v_xy_mag_curr - v_xy_mag_prev);
 	float w_z_error_d = (w_z_goal - w_z_goal_prev) - (w_z_curr - w_z_prev);
     
-	pwm_l = (K_p_v_xy_mag * v_xy_mag_error_p - K_p_v_y * v_y_error_p - K_p_w_z * w_z_error_p);
+	pwm_l = (K_p_v_xy_mag * v_xy_mag_error_p  K_p_v_y * v_y_error_p - K_p_w_z * w_z_error_p);
 	pwm_l += (K_d_v_xy_mag * v_xy_mag_error_d - K_d_v_y * v_y_error_d - K_d_w_z * w_z_error_d);
 
 	pwm_r = (K_p_v_xy_mag * v_xy_mag_error_p + K_p_v_y * v_y_error_p + K_p_w_z * w_z_error_p);
@@ -293,10 +294,16 @@ void loop() {
 
 	if (pwm_l > PWM_MAX) {
 	  pwm_l = 200;
+	} else if (pwm_l < PWM_MIN) {
+	  pwm_l = 0;
 	}
+
 	if (pwm_r > PWM_MAX) {
 	  pwm_r = 200;
+	} else if (pwm_r < PWM_MIN) {
+	  pwm_r = 0;
 	}
+
 
 	/* multiply pwm by constant ratio b/c motors run at diff speeds */
 	pwm_r *= 200.0/203.0;
