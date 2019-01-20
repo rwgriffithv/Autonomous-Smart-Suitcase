@@ -1,0 +1,3 @@
+VDD -> 5V (can try 3V3)
+OUT -> desired digital I/O pin (use 7)
+GND -> GND
