@@ -43,7 +43,7 @@ sensors_event_t gyro_event;
 
 unsigned long millis_prev;
 unsigned long millis_curr;
-const unsigned long PERIOD = 10;
+const unsigned long PERIOD = 100;
 
 unsigned long steps;
 
@@ -71,12 +71,12 @@ float pwm_r;
 
 const float K_p_v_y = 0.2;
 const float K_d_v_y = 0.05;
-const float K_p_v_xy_mag = 3;
-const float K_d_v_xy_mag = 0.7;
+const float K_p_v_xy_mag = 1;
+const float K_d_v_xy_mag = 0.5;
 const float K_p_w_z = 4;
 const float K_d_w_z = 2;
 
-const float ALPHA = 20.0;
+const float ALPHA = 40.0;
 const float PWM_MAX = 255;
 const float STRAIGHT_RATIO = 200.0/203.0;
 
