@@ -70,15 +70,14 @@ float pwm_l;
 float pwm_r;
 
 const float K_p_v_y = 0.2;
-const float K_d_v_y = 0.05;
-const float K_p_v_xy_mag = 0.5;
-const float K_d_v_xy_mag = 0.15;
-const float K_p_w_z = 3.0;
-const float K_d_w_z = 1.7;
+const float K_d_v_y = 0.1;
+const float K_p_v_xy_mag = 2.0;
+const float K_d_v_xy_mag = 3.0;
+const float K_p_w_z = 6.0;
+const float K_d_w_z = 8.0;
 
 const float ALPHA = 20.0;
 const float PWM_MAX = 255;
-const float PWM_MIN = 35;
 const float STRAIGHT_RATIO = 200.0/203.0;
 
 bool following;
@@ -294,14 +293,9 @@ void loop() {
 
 	if (pwm_l > PWM_MAX) {
 	  pwm_l = 200;
-	} else if (pwm_l < PWM_MIN) {
-	  pwm_l = 0;
 	}
-
 	if (pwm_r > PWM_MAX) {
 	  pwm_r = 200;
-	} else if (pwm_r < PWM_MIN) {
-	  pwm_r = 0;
 	}
 
 
