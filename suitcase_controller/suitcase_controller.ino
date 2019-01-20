@@ -71,8 +71,8 @@ float pwm_r;
 
 const float K_p_v_y = 0.2;
 const float K_d_v_y = 0.05;
-const float K_p_v_xy_mag = 0.3;
-const float K_d_v_xy_mag = 0.1;
+const float K_p_v_xy_mag = 3;
+const float K_d_v_xy_mag = 0.7;
 const float K_p_w_z = 4;
 const float K_d_w_z = 2;
 
@@ -213,7 +213,7 @@ void loop() {
       uint8_t state = 0;
       uint8_t spin = 0;
       uint8_t stop_state = 0;
-      while ((state < 13) && (spin < 49)) {
+      while ((state < 13) && (spin < 24)) {
 	if (BTserial.available()) {
 	  c_buf = BTserial.read();
 	  if (((c_buf == 'S') && !stop_state) ||
@@ -339,10 +339,9 @@ void loop() {
   } else { /* not following, check for start signal */
     uint8_t spin = 0;
     uint8_t start_state = 0;
-    while (spin < 49) {
+    while (spin < 25) {
       if (BTserial.available()) {
 	c_buf = BTserial.read();
-	Serial.print(c_buf);  // test
 	if (((c_buf == 'S') && !start_state) ||
 	    ((c_buf == 'T') && (start_state == 1)) ||
 	    ((c_buf == 'A') && (start_state == 2)) ||
