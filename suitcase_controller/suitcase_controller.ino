@@ -14,6 +14,14 @@
 #include "vector.h"
 
 
+/* Motor config */
+const uint8_t MOTOR_L_PWM_PIN = 10;
+const uint8_t MOTOR_R_PWM_PIN = 11;
+const uint8_t MOTOR_L_F_PIN = 8;
+const uint8_t MOTOR_L_B_PIN = 9;
+const uint8_t MOTOR_R_F_PIN = 12;
+const uint8_t MOTOR_R_B_PIN = 13;
+
 /* Bluetooth config */
 const uint8_t RxD = 6;
 const uint8_t TxD = 7;
@@ -133,13 +141,27 @@ void reset() {
   pwm_r = 0.0;
 
   following = false;
+
+  digitalWrite(MOTOR_L_PWM_PIN, 0);
+  digitalWrite(MOTOR_R_PWM_PIN, 0);
+  digitalWrite(MOTOR_L_F_PIN, HIGH);
+  digitalWrite(MOTOR_L_B_PIN, LOW);
+  digitalWrite(MOTOR_R_F_PIN, HIGH);
+  digitalWrite(MOTOR_R_B_PIN, LOW);
 }
 
 
 void setup() {
   Serial.begin(9600);
   BTserial.begin(38400);
-  
+
+  pinMode(MOTOR_L_PWM_PIN, OUTPUT);
+  pinMode(MOTOR_R_PWM_PIN, OUTPUT);
+  pinMode(MOTOR_L_F_PIN, OUTPUT);
+  pinMode(MOTOR_L_B_PIN, OUTPUT);
+  pinMode(MOTOR_R_F_PIN, OUTPUT);
+  pinMode(MOTOR_R_B_PIN, OUTPUT);
+
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH); // signal user to be still, is configuring
   delay(2000);
@@ -247,16 +269,22 @@ void loop() {
 	pwm_r = (K_p_v_xy_mag * v_xy_mag_error_p + K_p_v_y * v_y_error_p + K_p_w_z * w_z_error_p);
 	pwm_r += (K_d_v_xy_mag * v_xy_mag_error_d + K_d_v_y * v_y_error_d + K_d_w_z * w_z_error_d);
 
-	uint8_t wheel_dir_r = 0; // 0 for forward, 1 for backwards
-	uint8_t wheel_dir_l = 0; 
-
 	if (pwm_l < 0) {
-	  wheel_dir_l = 1;
+	  digitalWrite(MOTOR_L_F_PIN, LOW);
+	  digitalWrite(MOTOR_L_B_PIN, HIGH);
 	  pwm_l = -1.0 * pwm_l;
+	} else {
+	  digitalWrite(MOTOR_L_F_PIN, HIGH);
+	  digitalWrite(MOTOR_L_B_PIN, LOW);
 	}
+
 	if (pwm_r < 0) {
-	  wheel_dir_r = 1;
+	  digitalWrite(MOTOR_R_F_PIN, LOW);
+	  digitalWrite(MOTOR_R_B_PIN, HIGH);
 	  pwm_r = -1.0 * pwm_r;
+	} else {
+	  digitalWrite(MOTOR_R_F_PIN, HIGH);
+	  digitalWrite(MOTOR_R_B_PIN, LOW);
 	}
 
 	pwm_l *= alpha;
@@ -268,6 +296,11 @@ void loop() {
 	if (pwm_r > PWM_MAX) {
 	  pwm_r = 200;
 	}
+
+	/* multiply pwm by constant ratio b/c motors run at diff speeds */
+	digitalWrite(MOTOR_L_PWM_PIN, (int)pwm_l);
+	digitalWrite(MOTOR_R_PWM_PIN, (int)pwm_r);
+	
 
 	/* OUTPUT ERROR AND PWM OUTPUTS
 	   Serial.print(F("PL: "));
