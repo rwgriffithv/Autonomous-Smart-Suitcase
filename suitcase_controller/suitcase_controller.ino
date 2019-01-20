@@ -52,7 +52,7 @@ const float K_d_v_xy_mag = 0.1;
 const float K_p_w_z = 4;
 const float K_d_w_z = 2;
 
-const float alpha = 150.0;
+const float alpha = 20.0;
 const float PWM_MAX = 255;
 
 void computeBias() {
@@ -205,7 +205,7 @@ void loop() {
        pwm_r = 200;
     }
 
-    /* OUTPUT ERROR AND PWM OUTPUTS
+    /* OUTPUT ERROR AND PWM OUTPUTS */
     Serial.print(F("PL: "));
     Serial.print(pwm_l);
     Serial.print(F("; "));
@@ -227,7 +227,7 @@ void loop() {
     Serial.print(F("XY error P: "));
     Serial.print(v_xy_mag_error_p);
     Serial.println(F(""));
-    */
+    /**/
 
     /* reset so error doesn't accumulate */
     velocity_trans_curr = (struct vector){.x = 0, .y = 0, .z = 0};
