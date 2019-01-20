@@ -15,12 +15,12 @@
 
 
 /* Motor config */
-const uint8_t MOTOR_L_PWM_PIN = 11;
-const uint8_t MOTOR_R_PWM_PIN = 10;
-const uint8_t MOTOR_L_F_PIN = 12;
-const uint8_t MOTOR_L_B_PIN = 13;
-const uint8_t MOTOR_R_F_PIN = 8;
-const uint8_t MOTOR_R_B_PIN = 9;
+const uint8_t MOTOR_L_PWM_PIN = 10;
+const uint8_t MOTOR_R_PWM_PIN = 11;
+const uint8_t MOTOR_L_F_PIN = 8;
+const uint8_t MOTOR_L_B_PIN = 9;
+const uint8_t MOTOR_R_F_PIN = 12;
+const uint8_t MOTOR_R_B_PIN = 13;
 
 /* Bluetooth config */
 const uint8_t RxD = 6;
@@ -69,12 +69,12 @@ float w_z_curr;
 float pwm_l;
 float pwm_r;
 
-const float K_p_v_y = 0.2;
-const float K_d_v_y = 0.1;
-const float K_p_v_xy_mag = 2.0;
-const float K_d_v_xy_mag = 3.0;
-const float K_p_w_z = 6.0;
-const float K_d_w_z = 8.0;
+const float K_p_v_y = 0;
+const float K_d_v_y = 0;
+const float K_p_v_xy_mag = 15.0;
+const float K_d_v_xy_mag = 5.0;
+const float K_p_w_z = 40;
+const float K_d_w_z = 80;
 
 const float ALPHA = 20.0;
 const float PWM_MAX = 255;
@@ -264,11 +264,11 @@ void loop() {
 	float v_xy_mag_error_d = (v_xy_mag_goal - v_xy_mag_goal_prev) - (v_xy_mag_curr - v_xy_mag_prev);
 	float w_z_error_d = (w_z_goal - w_z_goal_prev) - (w_z_curr - w_z_prev);
     
-	pwm_l = (K_p_v_xy_mag * v_xy_mag_error_p - K_p_v_y * v_y_error_p - K_p_w_z * w_z_error_p);
-	pwm_l += (K_d_v_xy_mag * v_xy_mag_error_d - K_d_v_y * v_y_error_d - K_d_w_z * w_z_error_d);
+	pwm_l = (K_p_v_xy_mag * v_xy_mag_error_p + K_p_v_y * v_y_error_p + K_p_w_z * w_z_error_p);
+	pwm_l += (K_d_v_xy_mag * v_xy_mag_error_d + K_d_v_y * v_y_error_d + K_d_w_z * w_z_error_d);
 
-	pwm_r = (K_p_v_xy_mag * v_xy_mag_error_p + K_p_v_y * v_y_error_p + K_p_w_z * w_z_error_p);
-	pwm_r += (K_d_v_xy_mag * v_xy_mag_error_d + K_d_v_y * v_y_error_d + K_d_w_z * w_z_error_d);
+	pwm_r = (K_p_v_xy_mag * v_xy_mag_error_p - K_p_v_y * v_y_error_p - K_p_w_z * w_z_error_p);
+	pwm_r += (K_d_v_xy_mag * v_xy_mag_error_d - K_d_v_y * v_y_error_d - K_d_w_z * w_z_error_d);
 
 	if (pwm_l < 0) {
 	  digitalWrite(MOTOR_L_F_PIN, LOW);
