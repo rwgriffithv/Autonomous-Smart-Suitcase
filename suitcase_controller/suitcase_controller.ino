@@ -76,8 +76,9 @@ const float K_d_v_xy_mag = 0.1;
 const float K_p_w_z = 4;
 const float K_d_w_z = 2;
 
-const float alpha = 20.0;
+const float ALPHA = 20.0;
 const float PWM_MAX = 255;
+const float STRAIGHT_RATIO = 200.0/203.0;
 
 bool following;
 
@@ -287,8 +288,8 @@ void loop() {
 	  digitalWrite(MOTOR_R_B_PIN, LOW);
 	}
 
-	pwm_l *= alpha;
-	pwm_r *= alpha;
+	pwm_l *= ALPHA;
+	pwm_r *= ALPHA;
 
 	if (pwm_l > PWM_MAX) {
 	  pwm_l = 200;
@@ -298,6 +299,7 @@ void loop() {
 	}
 
 	/* multiply pwm by constant ratio b/c motors run at diff speeds */
+	pwm_r *= 200.0/203.0;
 	digitalWrite(MOTOR_L_PWM_PIN, (int)pwm_l);
 	digitalWrite(MOTOR_R_PWM_PIN, (int)pwm_r);
 	

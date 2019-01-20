@@ -21,7 +21,7 @@ uint8_t btn_state;
 const uint8_t RxD = 2;
 const uint8_t TxD = 3;
 SoftwareSerial BTserial(RxD, TxD);
-char c_buf = '';
+char c_buf = ' ';
 union BTData {
   char c[12];
   float f[3];
@@ -135,7 +135,7 @@ void loop() {
     btn_state = btn_state_new;
     if (btn_state_new) { /* was pressed (rising edge) */
       if (following) { /* send STOP */
-	char msg[4] = 'STOP';
+	char msg[5] = "STOP";
 	for (uint8_t i = 0; i < 4; ++i) {
 	  uint8_t spin = 0;
 	  while (spin < 49) {
@@ -148,7 +148,7 @@ void loop() {
 	  }
 	}
       } else { /* send START */
-	char msg[5] = 'START';
+	char msg[6] = "START";
 	for (uint8_t i = 0; i < 5; ++i) {
 	  uint8_t spin = 0;
 	  while (spin < 49) {
@@ -196,7 +196,7 @@ void loop() {
 	 order: b, v_y_goal, v_xy_mag_goal, w_z_goal
       */
       goal_data.f[0] = velocity_trans_curr.y;
-      goal_data.f[1] = velocity_xy_magnitude(&velocity_trans_curr);
+      goal_data.f[1] = vector_xy_magnitude(&velocity_trans_curr);
       goal_data.f[2] = velocity_ang_curr.z;
 
       uint8_t i = 0;
