@@ -16,9 +16,6 @@
 /* capacitive touch */
 const uint8_t TOUCH_BTN_PIN = 7;
 uint8_t btn_state;
-uint8_t btn_state_last;
-unsigned long last_debounce_millis;
-const unsigned long DEBOUNCE_DELAY = 100;
 
 /* Bluetooth config */
 const uint8_t RxD = 2;
@@ -134,50 +131,43 @@ void setup() {
 
 void loop() {
   uint8_t btn_state_new = digitalRead(TOUCH_BTN_PIN);
-  if (btn_state_new != btn_state_last) {
-    last_debounce_millis = millis();
-  }
-  if ((millis() - last_debounce_millis) > DEBOUNCE_DELAY) {
-    if (btn_state_new != btn_state) {
-      Serial.print(F("BUTTON PRESS   ;  "));
-      btn_state = btn_state_new;
-      if (btn_state_new == HIGH) { /* was pressed (rising edge) */
-	if (following) { /* send STOP */
-	  char msg[5] = "STOP";
-	  for (uint8_t i = 0; i < 4; ++i) {
-	    uint8_t spin = 0;
-	    while (spin < 49) {
-	      if (BTserial.available()) {
-		BTserial.write(msg[i]);
-		spin = 50;
-	      } else {
-		++spin;
-	      }
-	    }
-	  }
-	} else { /* send START */
-	  Serial.print(F("sending START"));
-	  Serial.println(F(""));
-	  char msg[6] = "START";
-	  for (uint8_t i = 0; i < 5; ++i) {
-	    uint8_t spin = 0;
-	    while (spin < 49) {
-	      if (BTserial.available()) {
-		BTserial.write(msg[i]);
-		spin = 50;
-	      } else {
-		++spin;
-	      }
+  if (btn_state_new != btn_state) {
+    Serial.print(F("BUTTON PRESS   ;  "));
+    btn_state = btn_state_new;
+    if (btn_state_new) { /* was pressed (rising edge) */
+      if (following) { /* send STOP */
+	char msg[5] = "STOP";
+	for (uint8_t i = 0; i < 4; ++i) {
+	  uint8_t spin = 0;
+	  while (spin < 49) {
+	    if (BTserial.available()) {
+	      BTserial.write(msg[i]);
+	      spin = 50;
+	    } else {
+	      ++spin;
 	    }
 	  }
 	}
-
-	following = !following;
+      } else { /* send START */
+	Serial.print(F("sending START"));
+	Serial.println(F(""));
+	char msg[6] = "START";
+	for (uint8_t i = 0; i < 5; ++i) {
+	  uint8_t spin = 0;
+	  while (spin < 49) {
+	    if (BTserial.available()) {
+	      BTserial.write(msg[i]);
+	      spin = 50;
+	    } else {
+	      ++spin;
+	    }
+	  }
+	}
       }
+
+      following = !following;
     }
   }
-  btn_state_last = btn_state_new;
-  
 
   if (following) {
     millis_curr = millis();

@@ -342,7 +342,6 @@ void loop() {
     while (spin < 49) {
       if (BTserial.available()) {
 	c_buf = BTserial.read();
-	Serial.print(F(c_buf));  // test
 	if (((c_buf == 'S') && !start_state) ||
 	    ((c_buf == 'T') && (start_state == 1)) ||
 	    ((c_buf == 'A') && (start_state == 2)) ||
