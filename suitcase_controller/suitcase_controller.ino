@@ -265,7 +265,7 @@ void loop() {
 	float v_xy_mag_error_d = (v_xy_mag_goal - v_xy_mag_goal_prev) - (v_xy_mag_curr - v_xy_mag_prev);
 	float w_z_error_d = (w_z_goal - w_z_goal_prev) - (w_z_curr - w_z_prev);
     
-	pwm_l = (K_p_v_xy_mag * v_xy_mag_error_p  K_p_v_y * v_y_error_p - K_p_w_z * w_z_error_p);
+	pwm_l = (K_p_v_xy_mag * v_xy_mag_error_p - K_p_v_y * v_y_error_p - K_p_w_z * w_z_error_p);
 	pwm_l += (K_d_v_xy_mag * v_xy_mag_error_d - K_d_v_y * v_y_error_d - K_d_w_z * w_z_error_d);
 
 	pwm_r = (K_p_v_xy_mag * v_xy_mag_error_p + K_p_v_y * v_y_error_p + K_p_w_z * w_z_error_p);
