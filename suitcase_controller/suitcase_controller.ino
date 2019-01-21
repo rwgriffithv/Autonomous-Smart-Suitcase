@@ -69,12 +69,12 @@ float w_z_curr;
 float pwm_l;
 float pwm_r;
 
-const float K_p_v_y = 0;
-const float K_d_v_y = 0;
-const float K_p_v_xy_mag = 15.0;
-const float K_d_v_xy_mag = 5.0;
-const float K_p_w_z = 40;
-const float K_d_w_z = 80;
+const float K_p_v_y = 1.0;
+const float K_d_v_y = 2.0;
+const float K_p_v_xy_mag = 20.0; // 20
+const float K_d_v_xy_mag = 70.0; // 7
+const float K_p_w_z = 240; //120 240
+const float K_d_w_z = 80; //60 80
 
 const float ALPHA = 20.0;
 const float PWM_MAX = 255;
